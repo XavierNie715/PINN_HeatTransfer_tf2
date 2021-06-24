@@ -38,12 +38,12 @@ else:
     # hp["layers"] = [2, 100, 100, 100, 100, 2]
 
     # Setting up the TF SGD-based optimizer (set tf_epochs=0 to cancel it)
-    hp["tf_epochs"] = 100
+    hp["tf_epochs"] = 5000
     hp["tf_lr"] = 0.03
     hp["tf_b1"] = 0.9
     hp["tf_eps"] = None
     # Setting up the quasi-newton LBGFS optimizer (set nt_epochs=0 to cancel it)
-    hp["nt_epochs"] = 200
+    hp["nt_epochs"] = 8000
     hp["nt_lr"] = 0.8
     hp["nt_ncorr"] = 50
     hp["log_frequency"] = 10
@@ -137,4 +137,6 @@ u_pred, _ = pinn.predict(X_star)
 plot_inf_cont_results(X_star, u_pred.flatten(), X_T_train, T_train,
                       Exact_T, X, T, x, t, save_path=eqnPath, save_hp=hp)
 
-scipy.io.savemat('./Results/Transient1D_hyperbolic.mat')
+scipy.io.savemat('./Results/Transient1D_hyperbolic.mat', {'X_star': X_star, 'u_pred.flatten()':u_pred.flatten(),
+                                                          'X_T_train': X_T_train, 'T_train': T_train, 'Exact_T': Exact_T,
+                                                        'X': X, 'T': T, 'x': x, 't': t})
