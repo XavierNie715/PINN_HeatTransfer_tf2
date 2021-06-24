@@ -28,7 +28,8 @@ else:
     # Data size on the solution T
     hp["N_T"] = 300
     # Collocation points size, where we’ll check for f = 0
-    hp["N_f"] = 1560000
+    # hp["N_f"] = 1560000
+    hp["N_f"] = 50000
 
     # DeepNN topology (2-sized input [x t], 8 hidden layer of 20-width, 1-sized output [T]
     hp["layers"] = [2, 20, 20, 20, 20, 20, 20, 20, 20, 1]
