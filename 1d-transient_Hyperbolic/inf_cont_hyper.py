@@ -4,6 +4,7 @@ import os
 import tensorflow as tf
 import numpy as np
 import tensorflow_probability as tfp
+import scipy.io
 
 # Manually making sure the numpy random seeds are "the same" on all devices
 np.random.seed(1234)
@@ -26,7 +27,7 @@ if len(sys.argv) > 1:
 else:
     hp = {}
     # Data size on the solution T
-    hp["N_T"] = 300
+    hp["N_T"] = 2000
     # Collocation points size, where we’ll check for f = 0
     # hp["N_f"] = 1560000
     hp["N_f"] = 50000
@@ -135,3 +136,5 @@ u_pred, _ = pinn.predict(X_star)
 # %% PLOTTING
 plot_inf_cont_results(X_star, u_pred.flatten(), X_T_train, T_train,
                       Exact_T, X, T, x, t, save_path=eqnPath, save_hp=hp)
+
+scipy.io.savemat('./Results/Transient1D_hyperbolic.mat')
