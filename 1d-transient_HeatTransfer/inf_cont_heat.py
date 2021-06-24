@@ -120,4 +120,4 @@ u_pred, _ = pinn.predict(X_star)
 
 # %% PLOTTING
 plot_inf_cont_results(X_star, u_pred.flatten(), X_T_train, T_train,
-                      Exact_T, X, T, x, t, save_path=None, save_hp=None)
+                      Exact_T, X, T, x, t, save_path=eqnPath, save_hp=hp)
