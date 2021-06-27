@@ -3,7 +3,7 @@ import json
 import os
 import tensorflow as tf
 import numpy as np
-import tensorflow_probability as tfp
+# import tensorflow_probability as tfp
 
 # Manually making sure the numpy random seeds are "the same" on all devices
 np.random.seed(1234)

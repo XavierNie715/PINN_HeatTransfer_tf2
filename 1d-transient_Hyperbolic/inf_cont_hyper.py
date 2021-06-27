@@ -30,7 +30,7 @@ else:
     hp["N_T"] = 2000
     # Collocation points size, where we’ll check for f = 0
     # hp["N_f"] = 1560000
-    hp["N_f"] = 50000
+    hp["N_f"] = 10000
 
     # DeepNN topology (2-sized input [x t], 8 hidden layer of 20-width, 1-sized output [T]
     hp["layers"] = [2, 20, 20, 20, 20, 20, 20, 20, 20, 1]
@@ -38,12 +38,12 @@ else:
     # hp["layers"] = [2, 100, 100, 100, 100, 2]
 
     # Setting up the TF SGD-based optimizer (set tf_epochs=0 to cancel it)
-    hp["tf_epochs"] = 5000
+    hp["tf_epochs"] = 100
     hp["tf_lr"] = 0.03
     hp["tf_b1"] = 0.9
     hp["tf_eps"] = None
     # Setting up the quasi-newton LBGFS optimizer (set nt_epochs=0 to cancel it)
-    hp["nt_epochs"] = 8000
+    hp["nt_epochs"] = 200
     hp["nt_lr"] = 0.8
     hp["nt_ncorr"] = 50
     hp["log_frequency"] = 10
@@ -64,9 +64,8 @@ class HyperInformedNN(NeuralNetwork):
     # Defining custom loss
     def loss(self, T, T_pred):
         f_pred = self.f_model()
-        mse_f = tf.reduce_mean(tf.square(f_pred))
-        mse_b = tf.reduce_mean(tf.square(T - T_pred))
-        return mse_b + mse_f
+        return tf.reduce_mean(tf.square(T - T_pred)) + \
+               tf.reduce_mean(tf.square(f_pred))
 
 
     # The actual PINN
@@ -84,18 +83,18 @@ class HyperInformedNN(NeuralNetwork):
             T = self.model(X_f)
             # Deriving INSIDE the tape (since we’ll need the x derivative of this later, u_xx)
             T_x = tape.gradient(T, self.x_f)
+            T_t = tape.gradient(T, self.t_f)
 
         # Getting the other derivatives
         T_xx = tape.gradient(T_x, self.x_f)
-        T_t = tape.gradient(T, self.t_f)
-
+        T_tt = tape.gradient(T_t, self.t_f)
         # Letting the tape go
         del tape
 
-        nu = self.get_params(numpy=True)
+        Fo = self.get_params(numpy=True)
 
         # Buidling the PINNs
-        return self.Fo * T_xx + T_t - T_xx
+        return Fo * T_tt + T_t - T_xx
 
 
     def get_params(self, numpy=False):
@@ -137,6 +136,6 @@ u_pred, _ = pinn.predict(X_star)
 plot_inf_cont_results(X_star, u_pred.flatten(), X_T_train, T_train,
                       Exact_T, X, T, x, t, save_path=eqnPath, save_hp=hp)
 
-scipy.io.savemat('./Results/Transient1D_hyperbolic.mat', {'X_star': X_star, 'u_pred.flatten()':u_pred.flatten(),
-                                                          'X_T_train': X_T_train, 'T_train': T_train, 'Exact_T': Exact_T,
-                                                        'X': X, 'T': T, 'x': x, 't': t})
+# scipy.io.savemat('./results/Transient1D_hyperbolic.mat', {'X_star': X_star, 'u_pred.flatten()': u_pred.flatten(),
+#                                                           'X_T_train': X_T_train, 'T_train': T_train, 'Exact_T': Exact_T,
+#                                                         'X': X, 'T': T, 'x': x, 't': t})
